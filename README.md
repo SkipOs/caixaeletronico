@@ -1,19 +1,11 @@
-# Stateful Click Counter
+# Caixa Eletrônico Virtual
 
-A new Flutter project created with FlutLab - https://flutlab.io
+Um projeto em Flutter visandoa  criação de um Caixa Eletrônico Virtual
 
-## Getting Started
+## Objetivo do Software
+O software visa proporcionar aos usuários uma maneira fácil e segura de realizar transações financeiras através de um terminal eletrônico, utilizando uma interface intuitiva desenvolvida em Flutter e Dart.
 
-A few resources to get you started if this is your first Flutter project:
-
-- https://flutter.dev/docs/get-started/codelab
-- https://flutter.dev/docs/cookbook
-
-For help getting started with Flutter, view our
-https://flutter.dev/docs, which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-## Getting Started: FlutLab - Flutter Online IDE
-
-- How to use FlutLab? Please, view our https://flutlab.io/docs
-- Join the discussion and conversation on https://flutlab.io/residents
+# Tecnologias Utilizadas
+Figma: Ferramenta de prototipagem utilizada para criar as interfaces do usuário.
+Flutter: Framework para desenvolvimento de aplicativos multiplataforma.
+Dart: Linguagem de programação utilizada com Flutter.
