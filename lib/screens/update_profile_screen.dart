@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UpdateProfileScreen extends StatelessWidget {
-  const UpdateProfileScreen({Key? key}) : super(key: key);
+  const UpdateProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class UpdateProfileScreen extends StatelessWidget {
 }
 
 class UpdateProfileForm extends StatelessWidget {
-  const UpdateProfileForm({Key? key}) : super(key: key);
+  const UpdateProfileForm({super.key});
 
   @override
   Widget build(BuildContext context) {

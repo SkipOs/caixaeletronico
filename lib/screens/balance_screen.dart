@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BalanceScreen extends StatefulWidget {
   final double currentBalance;
 
-  const BalanceScreen({Key? key, required this.currentBalance}) : super(key: key);
+  const BalanceScreen({super.key, required this.currentBalance});
 
   @override
   _BalanceScreenState createState() => _BalanceScreenState();
@@ -24,7 +24,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Seu Saldo Atual é:',
               style: TextStyle(fontSize: 24),
             ),

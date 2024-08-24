@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'register_screen.dart';
 import 'home_screen.dart';
-import '../services/api_service.dart'; // Importe o arquivo api_service.dart
+import 'register_screen.dart';
+import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -15,8 +15,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _contaController = TextEditingController();
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
+  final ApiService _apiService = ApiService('http://localhost:8080');
 
-  final ApiService _apiService = ApiService('http://localhost:8080/'); // Ajuste a URL da API conforme necessário
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,33 +29,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Obter os valores dos campos
-      final numeroConta = _contaController.text;
-      final nome = _usuarioController.text;
-      final senha = _senhaController.text;
+      setState(() {
+        _isLoading = true;
+      });
 
-      try {
-        // Chamar a API de login
-        final response = await _apiService.login(numeroConta, nome, senha);
+      final result = await _apiService.login(
+        _contaController.text,
+        _usuarioController.text,
+        _senhaController.text,
+      );
 
-        if (response.statusCode == 200) {
-          // Login bem-sucedido
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
-          );
-        } else {
-          // Exibir mensagem de erro se o login falhar
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Usuário ou senha inválidos')),
-          );
-        }
-      } catch (e) {
-        // Exibir mensagem de erro em caso de exceção
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result['success']) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                HomeScreen(numeroConta: _contaController.text),
+          ),
+        );
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao tentar se conectar com o servidor')),
+          SnackBar(content: Text(result['message'])),
         );
       }
     }
@@ -108,8 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _login,
-                child: const Text('Entrar'),
+                onPressed: _isLoading ? null : _login,
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Entrar'),
               ),
               const SizedBox(height: 20),
               TextButton(

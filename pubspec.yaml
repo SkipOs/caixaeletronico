@@ -4,18 +4,22 @@ description: Projetin ro douradin
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.0.0
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.2  # ou a versão mais recente
-
+  provider: ^6.0.0  
+  http: ^1.1.0 # ou a versão mais recente
+  qr_flutter: ^4.1.0
+  camera: ^0.10.0
+  flutter_barcode_scanner: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  
 
 flutter:
   uses-material-design: true

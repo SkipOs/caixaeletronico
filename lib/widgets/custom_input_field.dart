@@ -6,11 +6,11 @@ class CustomInputField extends StatelessWidget {
   final TextInputType keyboardType;
 
   const CustomInputField({
-    Key? key,
+    super.key,
     required this.label,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
