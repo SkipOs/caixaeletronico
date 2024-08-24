@@ -24,8 +24,8 @@ class DeleteAccountForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: const InputDecoration(labelText: 'Senha'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Senha'),
           obscureText: true,
         ),
         const SizedBox(height: 20),

@@ -24,14 +24,14 @@ class UpdateProfileForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: const InputDecoration(labelText: 'Nome'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Nome'),
         ),
-        TextField(
-          decoration: const InputDecoration(labelText: 'E-mail'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'E-mail'),
         ),
-        TextField(
-          decoration: const InputDecoration(labelText: 'Senha Atual'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Senha Atual'),
           obscureText: true,
         ),
         const SizedBox(height: 20),

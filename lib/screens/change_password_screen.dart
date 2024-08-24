@@ -24,16 +24,16 @@ class ChangePasswordForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: const InputDecoration(labelText: 'Senha Atual'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Senha Atual'),
           obscureText: true,
         ),
-        TextField(
-          decoration: const InputDecoration(labelText: 'Nova Senha'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Nova Senha'),
           obscureText: true,
         ),
-        TextField(
-          decoration: const InputDecoration(labelText: 'Confirmar Nova Senha'),
+        const TextField(
+          decoration: InputDecoration(labelText: 'Confirmar Nova Senha'),
           obscureText: true,
         ),
         const SizedBox(height: 20),

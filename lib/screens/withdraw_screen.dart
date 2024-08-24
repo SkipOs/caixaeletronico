@@ -8,7 +8,7 @@ class WithdrawalScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Withdrawal'), // `const` adicionado
+        title: const Text('Saque'), // `const` adicionado
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0), // `const` adicionado
@@ -16,7 +16,7 @@ class WithdrawalScreen extends StatelessWidget {
           children: <Widget>[
             const TextField(
               decoration: InputDecoration(
-                labelText: 'Amount',
+                labelText: 'Valor',
               ),
               keyboardType: TextInputType.number,
             ),
@@ -25,7 +25,7 @@ class WithdrawalScreen extends StatelessWidget {
               onPressed: () {
                 // Logic to handle withdrawal
               },
-              child: const Text('Withdraw'), // `const` adicionado
+              child: const Text('Saque'), // `const` adicionado
             ),
           ],
         ),

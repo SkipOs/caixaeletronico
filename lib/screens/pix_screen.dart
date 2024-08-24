@@ -9,8 +9,8 @@ class PixScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pix'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: PixForm(),
       ),
     );
