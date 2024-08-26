@@ -1,161 +1,161 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/usuario_conta_request.dart';
 
 class ApiService {
-  final String _baseUrl;
+  final String _baseURL;
 
-  ApiService(this._baseUrl);
+  ApiService(this._baseURL);
 
-  Future<Map<String, dynamic>> login(
-      String numeroConta, String nome, String senha) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'numeroConta': numeroConta, 'senha': senha}),
-      );
+  Future<Map<String, dynamic>?> cadastrarUsuarioConta(
+      Map<String, dynamic> usuarioContaData) async {
+    var url = Uri.parse('$_baseURL/usuario');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(usuarioContaData),
+    );
 
-      if (response.statusCode == 200) {
-        return {'success': true, 'data': json.decode(response.body)};
-      } else {
-        return {
-          'success': false,
-          'message': 'Login falhou: conta ou senha inválidos'
-        };
-      }
-    } catch (e) {
-      return {'success': false, 'message': 'Erro ao conectar ao serviço: $e'};
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      print('Erro ao cadastrar usuário e conta: ${response.body}');
+      return null;
     }
   }
 
-  Future<Map<String, dynamic>> registerUser(UsuarioContaRequest request) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/usuario'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(request.toJson()),
-      );
+  Future<int?> login(Map<String, dynamic> loginData) async {
+    var url = Uri.parse('$_baseURL/login');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(loginData),
+    );
 
-      if (response.statusCode == 200) {
-        return {'success': true, 'data': json.decode(response.body)};
-      } else {
-        return {'success': false, 'message': 'Registro falhou'};
-      }
-    } catch (e) {
-      return {'success': false, 'message': 'Erro ao conectar ao serviço: $e'};
+    if (response.statusCode == 200) {
+      // Se o login for bem-sucedido, retorna o idConta (número da conta)
+      return int.parse(response.body);
+    } else {
+      // Exibe uma mensagem de erro adequada
+      print('Erro ao logar: ${response.body}');
+      return null;
     }
   }
 
-  Future<Map<String, dynamic>> getSaldo(String numeroConta) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl/saldo?numeroConta=$numeroConta'),
-        headers: {'Content-Type': 'application/json'},
-      );
+  Future<bool> transferir(Map<String, dynamic> transferenciaData) async {
+    var url = Uri.parse('$_baseURL/transferencia');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(transferenciaData),
+    );
 
-      if (response.statusCode == 200) {
-        return {'success': true, 'data': json.decode(response.body)};
-      } else {
-        return {'success': false, 'message': 'Não foi possível obter o saldo'};
-      }
-    } catch (e) {
-      return {'success': false, 'message': 'Erro ao conectar ao serviço: $e'};
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return responseData['success'] ?? true; // Ajuste se necessário
+    } else {
+      print('Erro ao transferir: ${response.body}');
+      return false;
     }
   }
 
-  Future<Map<String, dynamic>> getExtrato(String numeroConta) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/extrato?numeroConta=$numeroConta'),
+  Future<bool> realizarDeposito(Map<String, dynamic> depositoData) async {
+    var url = Uri.parse('$_baseURL/deposito');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(depositoData),
+    );
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return responseData['success'] ?? true; // Ajuste se necessário
+    } else {
+      print('Erro ao realizar depósito: ${response.body}');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> realizarSaque(
+      Map<String, dynamic> saqueData) async {
+    var url = Uri.parse('$_baseURL/saque');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(saqueData),
+    );
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return responseData; // Ajuste conforme o formato da resposta
+    } else {
+      print('Erro ao realizar saque: ${response.body}');
+      return {'error': 'Erro ao realizar saque'};
+    }
+  }
+
+  Future<Map<String, dynamic>?> consultarSaldo(int idConta) async {
+    var url = Uri.parse('$_baseURL/saldo?idConta=$idConta');
+    var response = await http.get(
+      url,
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return json.decode(response.body) as Map<String, dynamic>;
     } else {
-      throw Exception('Falha ao carregar extrato');
+      // Retorna null ou lança uma exceção dependendo de como você deseja lidar com erros
+      return null;
     }
   }
 
-  Future<Map<String, dynamic>> saque(String numeroConta, String valor) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/saque'),
+  Future<String?> obterDetalhesUsuario(String numeroConta) async {
+    var url =
+        Uri.parse('$_baseURL/detalhes-usuario?numeroConta=$numeroConta');
+    var response = await http.get(
+      url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'numeroConta': numeroConta,
-        'valor': valor,
-      }),
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      var responseData = jsonDecode(response.body) as Map<String, dynamic>;
+      return responseData['nome'] as String?;
     } else {
-      throw Exception('Falha ao realizar saque');
+      print('Erro ao obter detalhes do usuário: ${response.body}');
+      return null;
     }
   }
 
-  Future<Map<String, dynamic>> transferir(
-    String numeroContaOrigem,
-    String numeroContaDestino,
-    String valor,
-    String senha,
-  ) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/transferencia'),
+  Future<Map<String, dynamic>?> obterExtrato(String numeroConta) async {
+    var url = Uri.parse('$_baseURL/extrato');
+    var response = await http.post(
+      url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'numeroContaOrigem': numeroContaOrigem,
-        'numeroContaDestino': numeroContaDestino,
-        'valor': valor,
-        'senha': senha,
-      }),
+      body: jsonEncode({'numeroConta': numeroConta}),
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return jsonDecode(response.body) as Map<String, dynamic>?;
     } else {
-      throw Exception('Falha ao realizar transferência');
+      print('Erro ao obter extrato: ${response.body}');
+      return null;
     }
   }
 
-  Future<Map<String, dynamic>> deposito(
-    String numeroConta,
-    String valor,
-    String senha,
-  ) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/deposito'),
+  Future<Map<String, dynamic>?> realizarPagamento(
+      Map<String, dynamic> pagamentoData) async {
+    var url = Uri.parse(
+        '$_baseURL/pagamento'); // Criar endpoint específico se necessário
+    var response = await http.post(
+      url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'numeroConta': numeroConta,
-        'valor': valor,
-        'senha': senha,
-      }),
+      body: jsonEncode(pagamentoData),
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return jsonDecode(response.body) as Map<String, dynamic>?;
     } else {
-      throw Exception('Falha ao realizar depósito');
-    }
-  }
-
-  Future<Map<String, dynamic>> urubudopix(String qrCodeData) async {
-    final decodedData = jsonDecode(qrCodeData);
-    final response = await http.post(
-      Uri.parse('$_baseUrl/transferencia'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'idContaRemetente': decodedData['idContaRemetente'],
-        'numeroContaDestinatario': decodedData['numeroContaDestinatario'],
-        'valorTransferencia': decodedData['amount'],
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      return {'success': true, 'message': 'Pagamento realizado com sucesso!'};
-    } else {
-      return {'success': false, 'message': response.body};
+      print('Erro ao realizar pagamento: ${response.body}');
+      return {'success': false, 'message': 'Erro ao realizar pagamento.'};
     }
   }
 }

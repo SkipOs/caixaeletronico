@@ -13,16 +13,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _contaController = TextEditingController();
-  final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
-  final ApiService _apiService = ApiService('http://localhost:8080');
+  final ApiService _apiService =
+      ApiService('http://localhost:8080'); // Verifique a URL aqui
 
   bool _isLoading = false;
 
   @override
   void dispose() {
     _contaController.dispose();
-    _usuarioController.dispose();
     _senhaController.dispose();
     super.dispose();
   }
@@ -33,27 +32,44 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      final result = await _apiService.login(
-        _contaController.text,
-        _usuarioController.text,
-        _senhaController.text,
-      );
+      final Map<String, dynamic> loginData = {
+        'numeroConta': _contaController.text,
+        'senha': _senhaController.text,
+      };
 
-      setState(() {
-        _isLoading = false;
-      });
+      try {
+        final int? accountId = await _apiService.login(loginData);
 
-      if (result['success']) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                HomeScreen(numeroConta: _contaController.text),
-          ),
-        );
-      } else {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (accountId != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                numeroConta:
+                    accountId.toString(), // Converta o ID da conta para String
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Falha no login. Verifique suas credenciais e tente novamente.'),
+            ),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'])),
+          const SnackBar(
+            content: Text('Erro ao tentar fazer login. Tente novamente.'),
+          ),
         );
       }
     }
@@ -74,21 +90,10 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               TextFormField(
                 controller: _contaController,
-                decoration: const InputDecoration(labelText: 'Conta'),
+                decoration: const InputDecoration(labelText: 'Número da Conta'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, insira sua conta';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _usuarioController,
-                decoration: const InputDecoration(labelText: 'Usuário'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira seu usuário';
+                    return 'Por favor, insira o número da sua conta';
                   }
                   return null;
                 },

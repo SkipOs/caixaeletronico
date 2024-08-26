@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import '../services/api_service.dart';
-import '../services/saldo_provider.dart';
 
 class PixScreen extends StatefulWidget {
   final String numeroConta;
@@ -15,17 +14,14 @@ class PixScreen extends StatefulWidget {
 }
 
 class _PixScreenState extends State<PixScreen> {
-  final ApiService _apiService = ApiService('http://localhost:8080');
-  final SaldoProvider _saldoProvider = SaldoProvider();
+  final ApiService _apiService = ApiService('https://localhost:8080');
   bool _isQrCodeGenerated = false;
   String _qrCodeData = '';
-  final String _errorMessage = '';
+  String _errorMessage = '';
 
   Future<void> _generateQrCode(double amount) async {
     final qrCodeData = jsonEncode({
-      'idContaRemetente': widget.numeroConta, // ID do remetente
-      'numeroContaDestinatario':
-          widget.numeroConta, // Número da conta para depósito
+      'numeroContaDestinatario': widget.numeroConta,
       'amount': amount,
     });
 
@@ -45,16 +41,26 @@ class _PixScreenState extends State<PixScreen> {
       );
 
       if (scannedData != '-1') {
-        final response = await _apiService.urubudopix(scannedData);
+        // Decodifica o QR Code em um Map
+        final Map<String, dynamic>? decodedData =
+            jsonDecode(scannedData) as Map<String, dynamic>?;
 
-        if (response['success']) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Pagamento realizado com sucesso!')),
-          );
-          Navigator.pop(context);
+        if (decodedData != null) {
+          final response = await _apiService.transferir(decodedData);
+
+          if (response == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Pagamento realizado com sucesso!')),
+            );
+            Navigator.pop(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Erro desconhecido.')),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['message'])),
+            const SnackBar(content: Text('Dados do QR Code inválidos.')),
           );
         }
       }
@@ -98,6 +104,10 @@ class _PixScreenState extends State<PixScreen> {
                 final amount = double.tryParse(value);
                 if (amount != null) {
                   _generateQrCode(amount);
+                } else {
+                  setState(() {
+                    _errorMessage = 'Digite um valor válido.';
+                  });
                 }
               },
             ),

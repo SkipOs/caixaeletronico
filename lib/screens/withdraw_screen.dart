@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
+import 'package:provider/provider.dart';
+import '../services/saldo_provider.dart';
 
 class WithdrawScreen extends StatefulWidget {
   final String numeroConta;
@@ -12,8 +15,10 @@ class WithdrawScreen extends StatefulWidget {
 
 class _WithdrawScreenState extends State<WithdrawScreen> {
   final TextEditingController _valorController = TextEditingController();
-  final ApiService _apiService = ApiService('http://localhost:8080');
+  final ApiService _apiService =
+      ApiService('http://localhost:8080'); // Ajuste para ambiente de produção
   bool _isLoading = false;
+  String _saldo = '';
   String _errorMessage = '';
 
   @override
@@ -22,11 +27,50 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchSaldo();
+  }
+
+  Future<void> _fetchSaldo() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      var saldoResponse =
+          await _apiService.consultarSaldo(int.parse(widget.numeroConta));
+
+      if (saldoResponse != null && saldoResponse.containsKey('saldo')) {
+        setState(() {
+          _saldo = saldoResponse['saldo'].toString();
+          _errorMessage = '';
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Erro ao obter saldo.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao conectar ao serviço: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Future<void> _handleWithdraw() async {
     final valor = _valorController.text;
-    if (valor.isEmpty) {
+    final valorDouble = double.tryParse(valor);
+
+    if (valor.isEmpty || valorDouble == null || valorDouble <= 0) {
       setState(() {
-        _errorMessage = 'Por favor, insira o valor do saque.';
+        _errorMessage = 'Por favor, insira um valor válido para o saque.';
       });
       return;
     }
@@ -34,20 +78,26 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = '';
+      _fetchSaldo();
     });
 
     try {
-      final result = await _apiService.saque(widget.numeroConta, valor);
+      var result = await _apiService.realizarSaque({
+        'idConta': widget.numeroConta,
+        'valorSaque': valorDouble,
+      });
 
-      if (result['success']) {
+      if (result.containsKey('error')) {
+        setState(() {
+          _errorMessage = result['error'];
+        });
+      } else {
+        // Assume que o resultado é um Map com notas e quantidades
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Saque realizado com sucesso!')),
         );
         _valorController.clear();
-      } else {
-        setState(() {
-          _errorMessage = result['message'];
-        });
+        _fetchSaldo();
       }
     } catch (e) {
       setState(() {
@@ -62,6 +112,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final saldoProvider = Provider.of<SaldoProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Saque'),
@@ -69,15 +121,31 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Text(
+              'Saldo: R\$ ${saldoProvider.saldoVisivel ? _saldo : '******,**'}',
+              style: const TextStyle(fontSize: 24),
+            ),
+            TextButton(
+              onPressed: () {
+                saldoProvider.toggleSaldoVisibility();
+              },
+              child: Text(saldoProvider.saldoVisivel
+                  ? 'Esconder Saldo'
+                  : 'Mostrar Saldo'),
+            ),
+            const SizedBox(height: 20.0),
             TextField(
               controller: _valorController,
               decoration: const InputDecoration(
                 labelText: 'Valor',
+                hintText: 'Insira o valor do saque',
               ),
-              keyboardType: TextInputType.number,
-              inputFormatters: const [
-                // Adicione formatação se necessário
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
             ),
             const SizedBox(height: 16.0),

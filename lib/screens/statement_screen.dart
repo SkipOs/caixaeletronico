@@ -11,9 +11,10 @@ class StatementScreen extends StatefulWidget {
 }
 
 class _StatementScreenState extends State<StatementScreen> {
-  final ApiService _apiService = ApiService('http://localhost:8080');
+  final ApiService _apiService =
+      ApiService('http://localhost:8080'); // Ajuste para ambiente de produção
   bool _isLoading = true;
-  List<Map<String, String>> _transacoes = [];
+  List<Map<String, dynamic>> _transacoes = [];
   String _errorMessage = '';
 
   @override
@@ -29,15 +30,28 @@ class _StatementScreenState extends State<StatementScreen> {
     });
 
     try {
-      final result = await _apiService.getExtrato(widget.numeroConta);
+      final result = await _apiService.obterExtrato(widget.numeroConta);
 
-      if (result['success']) {
-        setState(() {
-          _transacoes = List<Map<String, String>>.from(result['data']);
-        });
+      if (result != null) {
+        if (result.containsKey('extrato')) {
+          final data = result['extrato'];
+          if (data is List) {
+            setState(() {
+              _transacoes = List<Map<String, dynamic>>.from(data);
+            });
+          } else {
+            setState(() {
+              _errorMessage = 'Formato de dados inválido.';
+            });
+          }
+        } else {
+          setState(() {
+            _errorMessage = result['message'] ?? 'Erro desconhecido.';
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = result['message'];
+          _errorMessage = 'Nenhuma Movimentação Registrada';
         });
       }
     } catch (e) {
@@ -63,21 +77,53 @@ class _StatementScreenState extends State<StatementScreen> {
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage.isNotEmpty
                 ? Center(
-                    child: Text(_errorMessage,
-                        style: const TextStyle(color: Colors.red)))
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  )
                 : _transacoes.isEmpty
                     ? const Center(child: Text('Nenhuma transação encontrada'))
                     : ListView.builder(
                         itemCount: _transacoes.length,
                         itemBuilder: (context, index) {
                           final transacao = _transacoes[index];
+                          final idContaRemetente =
+                              transacao['idContaRemetente'] as int?;
+                          final idContaDestinatario =
+                              transacao['idContaDestinatario'] as int?;
+                          final nomeOutroDestinatario =
+                              transacao['nomeOutroUsuario'] as String?;
+                          final valor = transacao['valor'] as double?;
+                          final data = transacao['data'] as String? ??
+                              'Data não disponível';
+                          final tipoMovimento =
+                              transacao['tipoMovimento'] as String?;
+
+                          String descricao;
+                          if (idContaRemetente != null &&
+                              idContaRemetente.toString() ==
+                                  widget.numeroConta) {
+                            descricao = tipoMovimento == 'TRANSFERENCIA'
+                                ? 'Transferência enviada para ${nomeOutroDestinatario ?? 'Desconhecido'}'
+                                : 'Movimento: $tipoMovimento';
+                          } else if (idContaDestinatario != null &&
+                              idContaDestinatario.toString() ==
+                                  widget.numeroConta) {
+                            descricao = tipoMovimento == 'TRANSFERENCIA'
+                                ? 'Transferência recebida de ${nomeOutroDestinatario ?? 'Desconhecido'}'
+                                : 'Movimento: $tipoMovimento';
+                          } else {
+                            descricao = transacao['descricao'] ??
+                                'Descrição não disponível';
+                          }
+
                           return ListTile(
-                            title: Text(transacao['descricao'] ??
-                                'Descrição não disponível'),
-                            subtitle: Text(
-                                transacao['data'] ?? 'Data não disponível'),
-                            trailing: Text(
-                                transacao['valor'] ?? 'Valor não disponível'),
+                            title: Text(descricao),
+                            subtitle: Text(data),
+                            trailing: Text(valor != null
+                                ? 'R\$ ${valor.toStringAsFixed(2)}'
+                                : 'Valor não disponível'),
                           );
                         },
                       ),

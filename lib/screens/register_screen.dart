@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart'; // Importe o ApiService
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,6 +19,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _dataNascimentoController =
       TextEditingController();
 
+  // Crie uma instância do ApiService
+  final ApiService _apiService = ApiService('http://localhost:8080');
+
   @override
   void dispose() {
     _cpfController.dispose();
@@ -29,10 +33,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _register() {
+  // Função para registrar usuário e conta
+  void _register() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Lógica de registro
-      Navigator.pop(context);
+      Map<String, dynamic> usuarioContaData = {
+        'usuario': {
+          'cpf': _cpfController.text,
+          'nome': _nomeController.text,
+          'senha': _senhaController.text,
+          'email': _emailController.text,
+          'dataNascimento': _dataNascimentoController.text,
+        },
+        'conta': {
+          // Adicione os campos da conta aqui, se necessário
+        }
+      };
+
+      try {
+        final response =
+            await _apiService.cadastrarUsuarioConta(usuarioContaData);
+
+        if (response != null &&
+            response['message'] == 'Pessoa e conta cadastradas com sucesso!') {
+          final numeroConta = response['numeroConta'];
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Usuário cadastrado com sucesso! Número da conta: $numeroConta'),
+            ),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AccountDetailsScreen(numeroConta: numeroConta),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erro ao cadastrar usuário. Tente novamente.'),
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao conectar com o servidor.'),
+          ),
+        );
+      }
     }
   }
 
@@ -126,6 +176,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, insira sua data de nascimento';
                     }
+                    // Validação simples para a data
+                    if (!RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
+                      return 'Formato de data inválido. Use DD/MM/AAAA';
+                    }
                     return null;
                   },
                 ),
@@ -136,6 +190,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Tela para exibir detalhes da conta
+class AccountDetailsScreen extends StatelessWidget {
+  final String numeroConta;
+
+  const AccountDetailsScreen({super.key, required this.numeroConta});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Detalhes da Conta'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Text(
+            'Número da Conta: $numeroConta',
+            style: const TextStyle(fontSize: 18),
           ),
         ),
       ),
