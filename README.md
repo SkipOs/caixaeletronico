@@ -9,5 +9,5 @@ O software visa proporcionar aos usuários uma maneira fácil e segura de realiz
 - Figma: Ferramenta de prototipagem utilizada para criar as interfaces do usuário.
 - Flutter: Framework para desenvolvimento de aplicativos multiplataforma.
 - Dart: Linguagem de programação utilizada com Flutter.
-- Java: Back-end e lógica de funcionamento ([API](https://github.com/SkipOs/ATM_JAVA/tree/main)).
+- Java: Back-end e lógica de funcionamento ([API](https://github.com/SkipOs/test.git)).
 - AWS: Hosteamento de aplicação.
