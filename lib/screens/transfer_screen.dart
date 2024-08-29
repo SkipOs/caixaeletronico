@@ -17,8 +17,8 @@ class _TransferScreenState extends State<TransferScreen> {
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _contaDestinoController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
-  final ApiService _apiService =
-      ApiService('http://localhost:8080'); // Ajuste para ambiente de produção
+  final ApiService _apiService = ApiService(
+      'http://18.216.40.254   :8080'); // Ajuste para ambiente de produção
   bool _isLoading = false;
   String _saldo = '';
   String _errorMessage = '';

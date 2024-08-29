@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _contaController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   final ApiService _apiService =
-      ApiService('http://localhost:8080'); // Verifique a URL aqui
+      ApiService('http://18.216.40.254:8080'); // Verifique a URL aqui
 
   bool _isLoading = false;
 

@@ -14,7 +14,7 @@ class PixScreen extends StatefulWidget {
 }
 
 class _PixScreenState extends State<PixScreen> {
-  final ApiService _apiService = ApiService('https://localhost:8080');
+  final ApiService _apiService = ApiService('http://18.216.40.254:8080');
   bool _isQrCodeGenerated = false;
   String _qrCodeData = '';
   String _errorMessage = '';
@@ -22,7 +22,7 @@ class _PixScreenState extends State<PixScreen> {
   Future<void> _generateQrCode(double amount) async {
     final qrCodeData = jsonEncode({
       'numeroContaDestinatario': widget.numeroConta,
-      'amount': amount,
+      'valorTransferencia': amount,
     });
 
     setState(() {
@@ -34,28 +34,36 @@ class _PixScreenState extends State<PixScreen> {
   Future<void> _scanQRCode() async {
     try {
       final scannedData = await FlutterBarcodeScanner.scanBarcode(
-        '#ff6666', // Cor do botão de cancelar
-        'Cancelar', // Texto do botão de cancelar
-        true, // Mostrar a grade do scanner
+        '#ff6666',
+        'Cancelar',
+        true,
         ScanMode.QR,
       );
 
       if (scannedData != '-1') {
-        // Decodifica o QR Code em um Map
+        // Verifica se o QR Code contém um JSON válido
+        print('Dados escaneados: $scannedData');
         final Map<String, dynamic>? decodedData =
             jsonDecode(scannedData) as Map<String, dynamic>?;
 
         if (decodedData != null) {
-          final response = await _apiService.transferir(decodedData);
+          // Debugging: Print os dados decodificados
+          print('Dados decodificados: $decodedData');
 
-          if (response == true) {
+          final response = await _apiService.transferirPix(decodedData);
+
+          // Debugging: Print a resposta da API
+          print('Resposta da API: $response');
+
+          if (response['success'] == true) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Pagamento realizado com sucesso!')),
             );
             Navigator.pop(context);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Erro desconhecido.')),
+              SnackBar(
+                  content: Text(response['message'] ?? 'Erro desconhecido.')),
             );
           }
         } else {
@@ -64,7 +72,9 @@ class _PixScreenState extends State<PixScreen> {
           );
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Erro ao processar pagamento: $e');
+      print('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao processar pagamento: $e')),
       );

@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService _apiService = ApiService('http://localhost:8080');
+  final ApiService _apiService = ApiService('http://18.216.40.254:8080');
   bool _isLoading = false;
   String _saldo = '';
   String _nome =
@@ -26,8 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String _errorMessage = '';
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _fetchSaldo();
     _fetchNomeUsuario();
   }

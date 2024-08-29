@@ -20,7 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
 
   // Crie uma instância do ApiService
-  final ApiService _apiService = ApiService('http://localhost:8080');
+  final ApiService _apiService = ApiService('http://18.216.40.254:8080');
 
   @override
   void dispose() {
@@ -171,7 +171,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _dataNascimentoController,
                   decoration:
                       const InputDecoration(labelText: 'Data de Nascimento'),
-                  keyboardType: TextInputType.datetime,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, insira sua data de nascimento';

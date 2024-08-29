@@ -11,8 +11,8 @@ class StatementScreen extends StatefulWidget {
 }
 
 class _StatementScreenState extends State<StatementScreen> {
-  final ApiService _apiService =
-      ApiService('http://localhost:8080'); // Ajuste para ambiente de produção
+  final ApiService _apiService = ApiService(
+      'http://18.216.40.254:8080'); // Ajuste para ambiente de produção
   bool _isLoading = true;
   List<Map<String, dynamic>> _transacoes = [];
   String _errorMessage = '';
