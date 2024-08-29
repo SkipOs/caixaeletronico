@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'services/saldo_provider.dart';
 
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 void main() {
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => SaldoProvider(),

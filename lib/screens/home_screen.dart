@@ -5,6 +5,7 @@ import 'withdraw_screen.dart';
 import 'transfer_screen.dart';
 import 'deposit_screen.dart';
 import 'pix_screen.dart';
+import 'delete_account_screen.dart';
 import 'profile_screen.dart'; // Importe a tela de perfil
 import 'package:provider/provider.dart';
 import '../services/saldo_provider.dart';
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ApiService _apiService = ApiService('http://18.216.40.254:8080');
   bool _isLoading = false;
   String _saldo = '';
-  String _nome = 'Nome do Usuário'; // Inicialmente vazio ou com algum placeholder
+  String _nome = 'Erro'; // Inicialmente vazio ou com algum placeholder
   String _errorMessage = '';
 
   @override
@@ -115,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context) => ProfileScreen(numeroConta: widget.numeroConta)), // Navega para a tela de perfil
                   );
                 },
-                child: Text(widget.numeroConta),
+                child: Text(' '),
               ),
               currentAccountPicture: GestureDetector(
                 onTap: () {
@@ -134,6 +135,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+             ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Editar Perfil'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfileScreen(numeroConta: widget.numeroConta)), // Navega para a tela de perfil
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.receipt),
               title: const Text('Extrato'),
@@ -146,6 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+            const Divider(), // Linha divisória para separar a opção de logout
+
             ListTile(
               leading: const Icon(Icons.money_off),
               title: const Text('Saque'),
@@ -194,23 +208,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Perfil'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProfileScreen(numeroConta: widget.numeroConta)), // Navega para a tela de perfil
-                );
-              },
-            ),
             const Divider(), // Linha divisória para separar a opção de logout
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
+             ListTile(
+              leading: const Icon(Icons.person_remove),
+              title: const Text('Desativar conta'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DeleteAccountForm()), // Navega para a tela de perfil
+                );
               },
             ),
           ],

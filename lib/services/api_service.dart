@@ -179,22 +179,6 @@ class ApiService {
     }
   }
 
-  Future<String> atualizarUsuario(Map<String, dynamic> dadosAtualizacao) async {
-    var url = Uri.parse('$_baseURL/atualizar');
-    var response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(dadosAtualizacao),
-    );
-
-    if (response.statusCode == 200) {
-      return 'Usuário atualizado com sucesso!';
-    } else {
-      print('Erro ao atualizar usuário: ${response.body}');
-      return 'Erro ao atualizar usuário';
-    }
-  }
-
   Future<String> excluirConta(String numeroConta) async {
     var url = Uri.parse('$_baseURL/excluir');
     var response = await http.post(
@@ -225,4 +209,38 @@ class ApiService {
       return null;
     }
   }
+
+  Future<String> atualizarPerfil(Map<String, dynamic> atualizarPerfilData) async {
+    var url = Uri.parse('$_baseURL/atualizar');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(atualizarPerfilData),
+    );
+
+    if (response.statusCode == 200) {
+      return 'Perfil atualizado com sucesso!';
+    } else {
+      print('Erro ao atualizar perfil: ${response.body}');
+      return 'Erro ao atualizar perfil';
+    }
+  }
+
+
+ Future<String> atualizarSenhaUsuario(Map<String, dynamic> senhaData) async {
+    var url = Uri.parse('$_baseURL/atualizar-senha');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(senhaData),
+    );
+
+    if (response.statusCode == 200) {
+      return 'Senha atualizada com sucesso!';
+    } else {
+      print('Erro ao atualizar senha: ${response.body}');
+      return 'Erro ao atualizar senha';
+    }
+  }
+
 }
