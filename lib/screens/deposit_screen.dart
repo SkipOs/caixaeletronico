@@ -151,7 +151,7 @@ class _DepositScreenState extends State<DepositScreen> {
               decoration: const InputDecoration(
                 labelText: 'Valor de Depósito',
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],

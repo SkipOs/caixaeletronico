@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context) => ProfileScreen(numeroConta: widget.numeroConta)), // Navega para a tela de perfil
                   );
                 },
-                child: Text(' '),
+                child: const Text(' '),
               ),
               currentAccountPicture: GestureDetector(
                 onTap: () {
@@ -221,10 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.person_remove),
               title: const Text('Desativar conta'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DeleteAccountForm()), // Navega para a tela de perfil
+                Navigator.pop(
+                  context
                 );
               },
             ),

@@ -157,7 +157,7 @@ class _TransferScreenState extends State<TransferScreen> {
               decoration: const InputDecoration(
                 labelText: 'Valor de Transferência',
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],

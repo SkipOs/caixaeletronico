@@ -111,9 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   showDialog(
     context: context,
     builder: (context) {
-      var _novaSenhaController = TextEditingController();
-      var _confirmarSenhaController = TextEditingController();
-      var _senhaAtualController = TextEditingController();
+      var novaSenhaController = TextEditingController();
+      var confirmarSenhaController = TextEditingController();
+      var senhaAtualController = TextEditingController();
 
       return AlertDialog(
         title: const Text('Mudar Senha'),
@@ -121,17 +121,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: _senhaAtualController,
+              controller: senhaAtualController,
               decoration: const InputDecoration(labelText: 'Senha Atual'),
               obscureText: true,
             ),
             TextField(
-              controller: _novaSenhaController,
+              controller: novaSenhaController,
               decoration: const InputDecoration(labelText: 'Nova Senha'),
               obscureText: true,
             ),
             TextField(
-              controller: _confirmarSenhaController,
+              controller: confirmarSenhaController,
               decoration: const InputDecoration(labelText: 'Confirmar Nova Senha'),
               obscureText: true,
             ),
@@ -140,15 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              if (_novaSenhaController.text == _confirmarSenhaController.text) {
+              if (novaSenhaController.text == confirmarSenhaController.text) {
                 try {
                   final resposta = await _apiService.atualizarSenhaUsuario({
                     'numeroConta': widget.numeroConta,
-                    'senhaAtual': _senhaAtualController.text,
-                    'novaSenha': _novaSenhaController.text,
+                    'senhaAtual': senhaAtualController.text,
+                    'novaSenha': novaSenhaController.text,
                   });
 
                   if (resposta == 'Senha alterada com sucesso') {
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Senha alterada com sucesso')),
