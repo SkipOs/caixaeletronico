@@ -5,7 +5,7 @@ import 'withdraw_screen.dart';
 import 'transfer_screen.dart';
 import 'deposit_screen.dart';
 import 'pix_screen.dart';
-import 'delete_account_screen.dart';
+import '../services/pass_dialg.dart';
 import 'profile_screen.dart'; // Importe a tela de perfil
 import 'package:provider/provider.dart';
 import '../services/saldo_provider.dart';

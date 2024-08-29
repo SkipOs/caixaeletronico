@@ -179,21 +179,25 @@ class ApiService {
     }
   }
 
-  Future<String> excluirConta(String numeroConta) async {
-    var url = Uri.parse('$_baseURL/excluir');
-    var response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'numeroConta': numeroConta}),
-    );
+  Future<String> excluirConta(String numeroConta, String senha) async {
+  var url = Uri.parse('$_baseURL/excluir');
+  var response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'numeroConta': numeroConta,
+      'senha': senha,  // Enviar a senha no corpo da requisição
+    }),
+  );
 
-    if (response.statusCode == 200) {
-      return 'Conta excluída com sucesso!';
-    } else {
-      print('Erro ao excluir conta: ${response.body}');
-      return 'Erro ao excluir conta';
-    }
+  if (response.statusCode == 200) {
+    return 'Conta inativada com sucesso!';
+  } else {
+    print('Erro ao inativar conta: ${response.body}');
+    return 'Erro ao inativar conta: ${response.body}';
   }
+}
+
 
   Future<Map<String, dynamic>?> obterPerfilUsuario(String numeroConta) async {
     var url = Uri.parse('$_baseURL/detalhes-usuario?numeroConta=$numeroConta');
