@@ -4,7 +4,7 @@ import '../services/api_service.dart';
 class DeactivateAccountScreen extends StatefulWidget {
   final String numeroConta;
 
-  const DeactivateAccountScreen({Key? key, required this.numeroConta}) : super(key: key);
+  const DeactivateAccountScreen({super.key, required this.numeroConta});
 
   @override
   _DeactivateAccountScreenState createState() => _DeactivateAccountScreenState();
@@ -56,7 +56,7 @@ class _DeactivateAccountScreenState extends State<DeactivateAccountScreen> {
 
     if (response?['message'] == 'Conta inativada com sucesso!') {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Conta desativada com sucesso!')),
+        const SnackBar(content: Text('Conta desativada com sucesso!')),
       );
       Navigator.of(context).pop();
       Navigator.pop(context); // Volta para a tela anterior após sucesso

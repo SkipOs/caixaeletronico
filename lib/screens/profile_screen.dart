@@ -156,11 +156,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Redireciona para a tela de login
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Senha alterada com sucesso!')),
+                      const SnackBar(content: Text('Senha alterada com sucesso!')),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -174,15 +174,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('As senhas não coincidem')),
+                  const SnackBar(content: Text('As senhas não coincidem')),
                 );
               }
             },
-            child: Text('Salvar'),
+            child: const Text('Salvar'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child:  Text('Cancelar'),
+            child:  const Text('Cancelar'),
           ),
         ],
       );

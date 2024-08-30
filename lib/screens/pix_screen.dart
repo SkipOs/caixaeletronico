@@ -5,7 +5,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import '../services/api_service.dart';
 
 class PixScreen extends StatefulWidget {
-  final String numeroConta;
+  final String numeroConta; // Aqui eu assumo que numeroConta é, na verdade, o ID da conta.
 
   const PixScreen({super.key, required this.numeroConta});
 
@@ -18,10 +18,11 @@ class _PixScreenState extends State<PixScreen> {
   bool _isQrCodeGenerated = false;
   String _qrCodeData = '';
   String _errorMessage = '';
+  String _senha = ''; // Adicionei um campo para a senha
 
   Future<void> _generateQrCode(double amount) async {
     final qrCodeData = jsonEncode({
-      'numeroContaDestinatario': widget.numeroConta,
+      'numeroContaDestinatario': widget.numeroConta, // Destinatário
       'valorTransferencia': amount,
     });
 
@@ -36,7 +37,7 @@ class _PixScreenState extends State<PixScreen> {
       final scannedData = await FlutterBarcodeScanner.scanBarcode(
         '#ff6666',
         'Cancelar',
-        true,
+        false,
         ScanMode.QR,
       );
 
@@ -49,6 +50,10 @@ class _PixScreenState extends State<PixScreen> {
         if (decodedData != null) {
           // Debugging: Print os dados decodificados
           print('Dados decodificados: $decodedData');
+
+          // Adiciona o número da conta remetente e a senha
+          decodedData['idContaRemetente'] = int.parse(widget.numeroConta); // Conversão para o tipo long/inteiro
+          decodedData['senha'] = _senha; // Coletar a senha do campo
 
           final response = await _apiService.transferirPix(decodedData);
 
@@ -63,7 +68,8 @@ class _PixScreenState extends State<PixScreen> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(response['message'] ?? 'Erro desconhecido.')),
+                content: Text(response['message'] ?? 'Erro desconhecido.'),
+              ),
             );
           }
         } else {
@@ -119,6 +125,14 @@ class _PixScreenState extends State<PixScreen> {
                     _errorMessage = 'Digite um valor válido.';
                   });
                 }
+              },
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Senha'),
+              obscureText: true, // Para ocultar a senha
+              onChanged: (value) {
+                _senha = value; // Armazenando a senha digitada
               },
             ),
             if (_errorMessage.isNotEmpty)

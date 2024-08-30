@@ -58,24 +58,17 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> transferirPix(
-      Map<String, dynamic> transferenciaData) async {
-    var url = Uri.parse('$_baseURL/transferencia');
-    var response = await http.post(
-      url,
+   Future<Map<String, dynamic>> transferirPix(Map<String, dynamic> pixData) async {
+    final response = await http.post(
+      Uri.parse('$_baseURL/pix'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(transferenciaData),
+      body: jsonEncode(pixData),
     );
 
-    print('Status Code: ${response.statusCode}');
-    print('Response Body: ${response.body}');
-
     if (response.statusCode == 200) {
-      // Assumindo que o retorno é um objeto JSON sem colchetes
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body);
     } else {
-      print('Erro ao transferir: ${response.body}');
-      return {'success': false, 'message': 'Erro ao realizar transferência.'};
+      return {'success': false, 'message': 'Erro ao processar a transferência PIX'};
     }
   }
 
