@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String numeroConta;
@@ -110,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _mostrarDialogoMudancaSenha() {
   showDialog(
     context: context,
-    builder: (context) {
+    builder: (BuildContext dialogContext) {
       var novaSenhaController = TextEditingController();
       var confirmarSenhaController = TextEditingController();
       var senhaAtualController = TextEditingController();
@@ -148,11 +149,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'novaSenha': novaSenhaController.text,
                   });
 
-                  if (resposta == 'Senha alterada com sucesso') {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                  if (resposta == 'Senha alterada com sucesso!') {
+                    // Usa o dialogContext para fechar o diálogo
+                    Navigator.of(dialogContext, rootNavigator: true).pop();
+
+                    // Redireciona para a tela de login
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Senha alterada com sucesso')),
+                      SnackBar(content: Text('Senha alterada com sucesso!')),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -166,22 +174,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('As senhas não coincidem')),
+                  SnackBar(content: Text('As senhas não coincidem')),
                 );
               }
             },
-            child: const Text('Salvar'),
+            child: Text('Salvar'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child:  Text('Cancelar'),
           ),
         ],
       );
     },
   );
 }
-
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +224,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   TextField(
                     controller: _dataNascimentoController,
-                    decoration: const InputDecoration(labelText: 'Data de Nascimento'),
+                    decoration:
+                        const InputDecoration(labelText: 'Data de Nascimento'),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(

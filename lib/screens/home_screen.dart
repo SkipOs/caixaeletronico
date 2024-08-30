@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'delete_account_screen.dart';
 import 'statement_screen.dart';
 import 'withdraw_screen.dart';
 import 'transfer_screen.dart';
 import 'deposit_screen.dart';
 import 'pix_screen.dart';
-import '../services/pass_dialg.dart';
 import 'profile_screen.dart'; // Importe a tela de perfil
 import 'package:provider/provider.dart';
 import '../services/saldo_provider.dart';
@@ -221,8 +221,11 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.person_remove),
               title: const Text('Desativar conta'),
               onTap: () {
-                Navigator.pop(
-                  context
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DeactivateAccountScreen(numeroConta: widget.numeroConta)),
                 );
               },
             ),
